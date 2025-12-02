@@ -3,6 +3,7 @@ package functions
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 // a functions that splits the text by new lines
@@ -106,6 +107,7 @@ func ArtSelect(artType int) [][]string {
 			fmt.Println("Error reading file:", err)
 			os.Exit(1)
 		}
+		file = []byte(strings.ReplaceAll(string(file), "\r\n", "\n"))
 		if file[0] == '\n' {
 			file = file[1:]
 		}
