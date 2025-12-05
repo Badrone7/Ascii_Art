@@ -32,6 +32,9 @@ func Splitter(runes []rune) []string {
 func Onlynewlines(text string) int {
 	count := 0
 	runes := []rune(text)
+	if len(text) == 1 {
+		return -1
+	}
 	for i := 0; i < len(runes); i++ {
 		if i+1 < len(runes) && string(runes[i:i+2]) != "\\n" {
 			return -1
@@ -65,13 +68,10 @@ func ArtMaker(text string, artType int) {
 			os.Exit(1)
 		}
 	}
-	runes := []rune(text)
-	txt := Splitter(runes)
+	txt := strings.Split(text, "\\n")
 	for i := 0; i < len(txt); i++ {
-		if txt[i] == "\n" {
+		if txt[i] == "" {
 			fmt.Println()
-		} else if txt[i] == "" {
-			continue
 		} else {
 			PrintArt(txt[i], art)
 			if i+1 < len(txt) && txt[i+1] == "\n" {
@@ -88,7 +88,7 @@ func PrintArt(text string, art [][]string) {
 			index := int(char) - 32
 			fmt.Print(art[index][line])
 		}
-		if line != 7 {
+		if line != 8 {
 			fmt.Println()
 		}
 	}
@@ -127,6 +127,9 @@ func ArtSelect(artType int) [][]string {
 func ArtGenerator(file []byte) [][]string {
 	if file[0] == '\n' {
 		file = file[1:]
+	}
+	if file[len(file)-1] != '\n' {
+		file = append(file, '\n')
 	}
 	count := 0
 	character := []string{}
