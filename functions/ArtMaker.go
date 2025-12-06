@@ -6,37 +6,15 @@ import (
 	"strings"
 )
 
-// a functions that splits the text by new lines
-func Splitter(runes []rune) []string {
-	parts := []string{}
-	for i := 0; i < len(runes); i++ {
-		if i+1 < len(runes) && runes[i] == '\\' {
-			if runes[i+1] == 'n' {
-				parts = append(parts, string(runes[:i]))
-				parts = append(parts, "\n")
-				if i+2 >= len(runes) {
-					return parts
-				}
-				runes = runes[i+2:]
-				i = -1
-			}
-		}
-	}
-	if len(runes) > 0 {
-		parts = append(parts, string(runes))
-	}
-	return parts
-}
-
 // the function that will check if the text contains only new lines
 func Onlynewlines(text string) int {
 	count := 0
 	runes := []rune(text)
-	if len(text) == 1 {
-		return -1
-	}
 	for i := 0; i < len(runes); i++ {
-		if i+1 < len(runes) && string(runes[i:i+2]) != "\\n" {
+		if runes[i] != '\\' {
+			return -1
+		}
+		if i+1 >= len(runes) || runes[i+1] != 'n' {
 			return -1
 		}
 		count++
@@ -50,10 +28,9 @@ func Onlynewlines(text string) int {
 }
 
 // the funtion that makes the art
-func ArtMaker(text string, artType int) {
+func ArtMaker(text string) {
 	if text == "" {
-		fmt.Println("Error: No text provided.")
-		os.Exit(1)
+		return
 	}
 	if Onlynewlines(text) != -1 {
 		for i := 0; i < Onlynewlines(text); i++ {
@@ -61,22 +38,19 @@ func ArtMaker(text string, artType int) {
 		}
 		return
 	}
-	art := ArtSelect(artType)
+	art := ArtSelect()
 	for _, char := range text {
 		if char < 32 || char > 126 {
 			fmt.Println("Error: Unsupported character detected.")
-			os.Exit(1)
+			return
 		}
 	}
-	txt := strings.Split(text, "\\n")
+	txt := strings.Split(string(text), "\\n")
 	for i := 0; i < len(txt); i++ {
 		if txt[i] == "" {
 			fmt.Println()
 		} else {
 			PrintArt(txt[i], art)
-			if i+1 < len(txt) && txt[i+1] == "\n" {
-				fmt.Println()
-			}
 		}
 	}
 }
@@ -95,41 +69,20 @@ func PrintArt(text string, art [][]string) {
 }
 
 // a function that selects the art type
-func ArtSelect(artType int) [][]string {
-	art := [][]string{}
-	switch artType {
-	case 1:
-		file, err := os.ReadFile("resources/shadow.txt")
-		if err != nil {
-			fmt.Println("Error reading file:", err)
-			os.Exit(1)
-		}
-		art = ArtGenerator(file)
-	case 2:
-		file, err := os.ReadFile("resources/thinkertoy.txt")
-		if err != nil {
-			fmt.Println("Error reading file:", err)
-			os.Exit(1)
-		}
-		file = []byte(strings.ReplaceAll(string(file), "\r\n", "\n"))
-		art = ArtGenerator(file)
-	case 0:
-		file, err := os.ReadFile("resources/standard.txt")
-		if err != nil {
-			fmt.Println("Error reading file:", err)
-			os.Exit(1)
-		}
-		art = ArtGenerator(file)
+func ArtSelect() [][]string {
+	file, err := os.ReadFile("resources/standard.txt")
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		os.Exit(1)
 	}
+	art := ArtGenerator(file)
 	return art
 }
 
+// a function that generates the art from a txt file
 func ArtGenerator(file []byte) [][]string {
 	if file[0] == '\n' {
 		file = file[1:]
-	}
-	if file[len(file)-1] != '\n' {
-		file = append(file, '\n')
 	}
 	count := 0
 	character := []string{}

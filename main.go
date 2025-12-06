@@ -1,29 +1,26 @@
 package main
 
 import (
-	"ascii/functions"
 	"os"
+
+	"ascii/functions"
 )
 
 /*
 	In this Program we gonna turn a simple ascii text into an ASCII Art
-	We have 3 types of arts:
-		- Standard
-		- Shadow
-		- Thinkertoy
 	The program will take 2 arguments:
+		- the file containing the main function
 		- The text to convert
-		- The command (optional)
 	Example of usage:
-		go run main.go "Hello World" --shadow
+		go run main.go "Hello World"
 */
 
 // the main function
 
 func main() {
-	validarg, artType := functions.ArgsChecker(os.Args)
+	validarg := functions.ArgsChecker(os.Args)
 	if !validarg {
 		return
 	}
-	functions.ArtMaker(os.Args[1], artType)
+	functions.ArtMaker(os.Args[1])
 }
